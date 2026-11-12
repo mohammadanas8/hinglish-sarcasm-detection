@@ -1,4 +1,3 @@
-
 import streamlit as st
 import torch
 from transformers import AutoTokenizer, AutoModelForSequenceClassification
@@ -17,28 +16,34 @@ tokenizer, model = load_model()
 st.title("Hinglish Sarcasm Detection")
 st.write("Detect sarcasm in Hindi-English code-mixed text.")
 
-text = st.text_area("Enter your text:")
+text = st.text_area("Enter your Hinglish text:")
 
 if st.button("Detect Sarcasm"):
-    if text.strip():
+    if not text.strip():
+        st.warning("Please enter some text.")
+    else:
         inputs = tokenizer(
             text,
             return_tensors="pt",
             truncation=True,
-            padding=True,
             max_length=128
         )
 
         with torch.no_grad():
             outputs = model(**inputs)
-            probabilities = torch.softmax(outputs.logits, dim=1)[0]
+            probs = torch.softmax(outputs.logits, dim=1)[0]
 
-        prediction = torch.argmax(probabilities).item()
+        prediction = probs.argmax().item()
 
         if prediction == 1:
             st.error("SARCASTIC")
         else:
             st.success("NON-SARCASTIC")
 
-        st.write(f"Non-sarcastic: {probabilities[0].item()*100:.2f}%")
-        st.write(f"Sarcastic: {probabilities[1].item()*100:.2f}%")
+        st.write(f"Non-sarcastic: {probs[0].item()*100:.2f}%")
+        st.write(f"Sarcastic: {probs[1].item()*100:.2f}%")
+
+        st.info(
+            "This model is designed primarily for Hindi-English "
+            "code-mixed text. English-only predictions may be unreliable."
+        )
