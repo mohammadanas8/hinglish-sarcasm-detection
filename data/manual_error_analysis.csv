@@ -1,0 +1,3 @@
+text,expected_label,predicted_label,confidence,error_type
+"Mujhe aaj bilkul achha nahi lag raha hai.",0,1,91.94,"Negative sentiment mistaken as sarcasm"
+"You did an excellent job.",0,1,99.50,"Potential English compliment false positive"
